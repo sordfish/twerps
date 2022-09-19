@@ -2,9 +2,19 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/sordfish/panull"
 )
+
+func GetActiveSinks(w http.ResponseWriter, req *http.Request) {
+
+	sinks, _ := panull.GetActiveSinks()
+	for _, v := range sinks {
+		fmt.Fprintf(w, "%#v\n", v)
+	}
+
+}
 
 func main() {
 	sink := panull.Sink{Name: "Virtual Output"}
@@ -13,10 +23,10 @@ func main() {
 	if err := sink.Create(); err != nil {
 		panic(err)
 	}
-	//defer sink.Destroy()
+	defer sink.Destroy()
 
-	sinks, _ := panull.GetActiveSinks()
-	for _, v := range sinks {
-		fmt.Printf("%#v\n", v)
-	}
+	http.HandleFunc("/sinks", GetActiveSinks)
+
+	http.ListenAndServe(":7780", nil)
+
 }
