@@ -13,7 +13,7 @@ func main() {
 	if err := sink.Create(); err != nil {
 		panic(err)
 	}
-	defer sink.Destroy()
+	//defer sink.Destroy()
 
 	sinks, _ := panull.GetActiveSinks()
 	for _, v := range sinks {
