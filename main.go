@@ -43,7 +43,7 @@ func createNullSink(w http.ResponseWriter, req *http.Request) {
 	if err := sink.Create(); err != nil {
 		panic(err)
 	}
-	defer sink.Destroy()
+	fmt.Fprintf(w, "Done!")
 }
 
 func main() {
