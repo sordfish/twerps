@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -11,12 +12,17 @@ func GetActiveSinks(w http.ResponseWriter, req *http.Request) {
 
 	sinks, _ := panull.GetActiveSinks()
 	for _, v := range sinks {
-		fmt.Fprintf(w, "%#v\n", v)
+
+		u, err := json.Marshal(v)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Fprintf(w, string(u))
 	}
 
 }
 
-func main() {
+func createNullSink(w http.ResponseWriter, req *http.Request) {
 	sink := panull.Sink{Name: "Virtual Output"}
 	sink.SetProperty("device.description", "Virtual Output")
 
@@ -24,8 +30,11 @@ func main() {
 		panic(err)
 	}
 	defer sink.Destroy()
+}
 
+func main() {
 	http.HandleFunc("/sinks", GetActiveSinks)
+	http.HandleFunc("/create/nullsink", createNullSink)
 
 	http.ListenAndServe(":7780", nil)
 
